@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        Contact Form with Captcha
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,700;1,500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="contactForm.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header-text">
+            <h1 id="header" class="form-header" data-component="header">Contact Us</h1>
+            <div id="subHeader" class="form-subHeader">Please fill out all the fields.</div>
+        </div>
+
+        <form id="contact-form" action="submit.php" method="POST">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="text" name="email" placeholder="Your Email" required>
+            <textarea name="message" placeholder="Your Message" required></textarea>
+
+            <div class="captcha-container">
+                <span id="captcha"></span>
+                <button type="button" onclick="refreshCaptcha()">Refresh</button>
+            </div>
+
+            <input type="text" name="captcha-input" placeholder="Enter the CAPTCHA code" required>
+
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        // Generate a random CAPTCHA code
+        function generateCaptcha() {
+            var captcha = '';
+            var possibleChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+            for (var i = 0; i < 6; i++) {
+                captcha += possibleChars.charAt(Math.floor(Math.random() * possibleChars.length));
+            }
+
+            return captcha;
+        }
+
+        // Refresh the CAPTCHA code
+        function refreshCaptcha() {
+            document.getElementById('captcha').textContent = generateCaptcha();
+        }
+
+        // Validate the CAPTCHA input
+        function validateCaptcha() {
+            var captcha = document.getElementById('captcha').textContent;
+            var userInput = document.getElementsByName('captcha-input')[0].value;
+
+            if (userInput.toLowerCase() !== captcha.toLowerCase()) {
+                document.getElementById('error-message').textContent = 'Invalid CAPTCHA code. Please try again.';
+                return false;
+            }
+
+            return true;
+        }
+
+        // Submit the form with CAPTCHA validation
+        document.getElementById('contact-form').addEventListener('submit', function (event) {
+            var isValid = validateCaptcha();
+
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+
+        // Generate initial CAPTCHA code on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('captcha').textContent = generateCaptcha();
+        });
+
+        // Clear error and success messages
+        function clearMessages() {
+            document.getElementById('error-message').textContent = '';
+            document.getElementById('success-message').textContent = '';
+        }
+
+        // Submit the form with CAPTCHA validation
+    document.getElementById('contact-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting and forwarding to a new page
+        clearMessages();
+        var isValid = validateCaptcha();
+
+        if (!isValid) {
+            return;
+        }
+
+        document.getElementById('success-message').textContent = 'Submitted successfully!';
+    });
+    </script>
+</body>
+
+</html>
